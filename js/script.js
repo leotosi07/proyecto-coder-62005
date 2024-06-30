@@ -12,10 +12,16 @@ const buttonIds = ["#button1", "#button2", "#button3"];
 /*DOM*/
 
 
-const newGame = document.getElementById('newgame');
-const loadGame = document.getElementById('loadgame');
-const saveGame = document.getElementById('savegame');
+
+
+const mainMenu = document.getElementById('menu')
+const newGameBtn = document.getElementById('newgame');
+const loadGameBtn = document.getElementById('loadgame');
+const saveGameBtn = document.getElementById('savegame');
 const [button1, button2, button3] = buttonIds.map(id => document.querySelector(id));
+const controls = document.getElementById('controls')
+const stats = document.getElementById('stats')
+const intro = document.querySelector("#intro");
 const text = document.querySelector("#text");
 const xpText = document.querySelector("#xpText");
 const hpText = document.querySelector("#hpText");
@@ -116,13 +122,41 @@ const locations = [
     }
 ]
 
-const showButtons = () => {
-    const selector = buttonIds.join(", ");
-    const buttons = document.querySelectorAll(selector);
-    buttons.forEach(button => {
-        button.style.display = "inline";
+//start game
+newGameBtn.addEventListener('click', () => {
+    newGameBtn.style.display = "none";
+    loadGameBtn.style.display = "none";
+    restart()
+
+    let playerForm = document.createElement('form');
+    let input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'playerName';
+    input.placeholder = 'Enter your name';
+    let submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Iniciar';
+    playerForm.appendChild(input);
+    playerForm.appendChild(submitButton);
+    mainMenu.appendChild(playerForm);
+
+    playerForm.addEventListener('submit', function(event) {
+        event.preventDefault(); 
+        playerName = input.value.trim();
+        if (playerName === '') {
+            alert('Please enter your name.');
+        } else {
+            playerForm.style.display = "none";
+            newGameBtn.style.display = "block";
+            loadGameBtn.style.display = "block";
+            saveGameBtn.style.display = "block";
+            intro.style.display="none";
+            text.style.display="block";
+            controls.style.display="block";
+            stats.style.display="block";
+        }
     });
-};
+});
 
 // initialize buttons
 
@@ -273,6 +307,11 @@ function restart() {
     inventory = ["rod"];
     updateStats();
     goTown();
+    saveGameBtn.style.display = "none";
+    intro.style.display="block";
+    text.style.display="none";
+    controls.style.display="none";
+    stats.style.display="none";
 }
 
 function easterEgg() {
@@ -304,8 +343,8 @@ function pick(guess) {
         gold += 20;
         updateStats();
     } else {
-        text.innerText += "Wrong! You lose 10 hp!"
-        hp -= 10;
+        text.innerText += "Wrong! You lose 20 hp!"
+        hp -= 20;
         updateStats();
         if (hp <= 0) {
             lose();
