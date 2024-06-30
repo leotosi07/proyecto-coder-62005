@@ -2,17 +2,13 @@ let xp = 0;
 let hp = 100;
 let gold = 50;
 let currentWeapon = 0;
-let weaponCost = 50;
 let fighting;
 let monterHp;
 let inventory = ["rod"];
 let playerName = '';
 
 const buttonIds = ["#button1", "#button2", "#button3"];
-const button1 = document.querySelector(buttonIds[0]);
-const button2 = document.querySelector(buttonIds[1]);
-const button3 = document.querySelector(buttonIds[2]);
-
+const [button1, button2, button3] = buttonIds.map(id => document.querySelector(id));
 
 const text = document.querySelector("#text");
 const xpText = document.querySelector("#xpText");
@@ -66,50 +62,50 @@ const enemys = [
 const locations = [
     {
         name: "town entrance",
-        "button text": ["Go to store", "Go to dungeon", "Fight King"],
-        "button functions": [goStore, goDungeon, fightKing],
+        buttonText: ["Go to store", "Go to dungeon", "Fight King"],
+        buttonFunctions: [goStore, goDungeon, fightEnemy.bind(null, 2)],
         text: "You are in the town entrance. You see a sign that says \"Store.\""
     },
     {
         name: "store",
-        "button text": ["Buy 10 hp (10 gold)", `Buy weapon (50 gold)`, "Go to town entrance"],
-        "button functions": [buyHp, buyWeapon, goTown],
+        buttonText: ["Buy 10 hp (10 gold)", `Buy weapon (50 gold)`, "Go to town entrance"],
+        buttonFunctions: [buyHp, buyWeapon, goTown],
         text: "You enter the store."
     },
     {
         name: "dungeon",
-        "button text": ["Fight Skeleton", "Fight Camelot Soldier", "Go to town entrance"],
-        "button functions": [fightSlime, fightBeast, goTown],
-        text: "You enter the dungeon. You see some enemys."
+        buttonText: ["Fight Skeleton", "Fight Camelot Soldier", "Go to town entrance"],
+        buttonFunctions: [fightEnemy.bind(null, 0), fightEnemy.bind(null, 1), goTown],
+        text: "You enter the dungeon. You see some enemies."
     },
     {
         name: "fight",
-        "button text": ["Attack", "Dodge", "Run"],
-        "button functions": [attack, dodge, goTown],
+        buttonText: ["Attack", "Dodge", "Run"],
+        buttonFunctions: [attack, dodge, goTown],
         text: "You are fighting an enemy."
     },
     {
         name: "kill enemy",
-        "button text": ["Go to town entrance", "Go to town entrance", "Go to town entrance"],
-        "button functions": [goTown, goTown, easterEgg],
+        buttonText: ["Go to town entrance", "Go to town entrance", "Go to town entrance"],
+        buttonFunctions: [goTown, goTown, easterEgg],
         text: 'The enemy screams "Arg!" as it dies. You gain experience points and find gold.'
     },
     {
         name: "lose",
-        "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
-        "button functions": [restart, restart, restart],
+        buttonText: ["REPLAY?", "REPLAY?", "REPLAY?"],
+        buttonFunctions: [restart, restart, restart],
         text: "You die. ☠️"
     },
     {
         name: "win",
-        "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
-        "button functions": [restart, restart, restart],
+        buttonText: ["REPLAY?", "REPLAY?", "REPLAY?"],
+        buttonFunctions: [restart, restart, restart],
         text: "You defeat the King! YOU WIN THE GAME! 🎉"
     },
     {
         name: "easter egg",
-        "button text": ["2", "8", "Go to town entrance?"],
-        "button functions": [pickTwo, pickEight, goTown],
+        buttonText: ["2", "8", "Go to town entrance?"],
+        buttonFunctions: [pickTwo, pickEight, goTown],
         text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
     }
 ]
@@ -126,16 +122,16 @@ const showButtons = () => {
 
 button1.onclick = goStore;
 button2.onclick = goDungeon;
-button3.onclick = fightKing;
+button3.onclick = fightEnemy.bind(null, 2);
 
 function update(location) {
     enemyStats.style.display = "none";
-    button1.innerText = location["button text"][0];
-    button2.innerText = location["button text"][1];    
-    button3.innerText = location["button text"][2];
-    button1.onclick = location["button functions"][0];
-    button2.onclick = location["button functions"][1];
-    button3.onclick = location["button functions"][2];
+    button1.innerText = location.buttonText[0];
+    button2.innerText = location.buttonText[1];    
+    button3.innerText = location.buttonText[2];
+    button1.onclick = location.buttonFunctions[0];
+    button2.onclick = location.buttonFunctions[1];
+    button3.onclick = location.buttonFunctions[2];
     text.innerText = location.text;
 }
 
@@ -155,8 +151,7 @@ function buyHp() {
     if (gold >= 10) {
         gold -= 10;
         hp += 10;
-        goldText.innerText = gold;
-        hpText.innerText = hp;
+        updateStats();
     } else {
         text.innerText = "You do not have enough gold to buy hp.";
     }
@@ -168,13 +163,13 @@ function buyWeapon() {
         if (gold >= weapons[currentWeapon + 1].cost) {
             gold -= weapons[currentWeapon + 1].cost;
             currentWeapon++;
-            goldText.innerText = gold;
             let newWeapon = weapons[currentWeapon].name;
             text.innerText = "You now have a " + newWeapon + ".";
             inventory.push(newWeapon);
             text.innerText += " In your inventory you have: " + inventory;
-            locations[1]["button text"][1] = `Buy weapon (${weapons[currentWeapon + 1] ? weapons[currentWeapon + 1].cost : "No"} gold)`;
+            locations[1].buttonText[1] = `Buy weapon (${weapons[currentWeapon + 1] ? weapons[currentWeapon + 1].cost : "No"} gold)`;
             update(locations[1]);
+            updateStats();
         } else {
             text.innerText = "You do not have enough gold to buy a weapon.";
         }
@@ -188,27 +183,17 @@ function buyWeapon() {
 function sellWeapon() {
     if (inventory.length > 1) {
         gold += 15;
-        goldText.innerText = gold;
         let currentWeapon = inventory.shift();
         text.innerText = "You sold a " + currentWeapon + ".";
         text.innerText += " In your inventory you have: " + inventory;
+        updateStats();
     } else {
         text.innerText = "Don't sell your only weapon!";
     }
 }
 
-function fightSlime() {
-    fighting = 0;
-    goFight();
-}
-
-function fightBeast() {
-    fighting = 1;
-    goFight();
-}
-
-function fightKing() {
-    fighting = 2;
+function fightEnemy(index) {
+    fighting = index;
     goFight();
 }
 
@@ -262,8 +247,7 @@ function dodge() {
 function defeatEnemy() {
     gold += Math.floor(enemys[fighting].level * 6.7)
     xp += enemys[fighting].level;
-    goldText.innerText = gold;
-    xpText.innerText = xp;
+    updateStats();
     update(locations[4]);
 }
 
@@ -281,9 +265,7 @@ function restart() {
     gold = 50;
     currentWeapon = 0;
     inventory = ["rod"];
-    goldText.innerText = gold;
-    hpText.innerText = hp;
-    xpText.innerText = xp;
+    updateStats();
     goTown();
 }
 
@@ -314,13 +296,18 @@ function pick(guess) {
     if (numbers.indexOf(guess) !== -1) {
         text.innerText += "Right! You win 20 gold!"
         gold += 20;
-        goldText.innerText = gold;
+        updateStats();
     } else {
         text.innerText += "Wrong! You lose 10 hp!"
         hp -= 10;
-        hpText.innerText = hp
+        updateStats();
         if (hp <= 0) {
             lose();
         }
     }
+}
+function updateStats() {
+    goldText.innerText = gold;
+    hpText.innerText = hp;
+    xpText.innerText = xp;
 }
