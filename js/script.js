@@ -146,7 +146,7 @@ newGameBtn.addEventListener('click', () => {
         event.preventDefault();
         playerName = input.value.trim();
         if (playerName === '') {
-            alert('Please enter your name.');
+            customAlert('Please enter your name.');
         } else {
             setDisplay([newGameBtn, loadGameBtn, saveGameBtn,text,controls,stats], "block");
             setDisplay([intro, playerForm], "none");
@@ -374,43 +374,119 @@ function saveGame() {
         timestamp: new Date().toLocaleString()
     };
 
-    const saves = JSON.parse(localStorage.getItem('saves')) || [];
-    const saveOption = confirm("Do you want to save a new slot? (OK for new slot, Cancel for overwrite)");
-
-    if (saveOption) {
-        saves.push(saveData);
-    } else {
-        saves[saves.length - 1] = saveData;
-    }
-
-    localStorage.setItem('saves', JSON.stringify(saves));
-    alert("Game saved!");
+    customConfirm("Do you want to save a new slot? (OK for new slot, Cancel for overwrite)", (confirmResult) => {
+        if (confirmResult) {
+            const saves = JSON.parse(localStorage.getItem('saves')) || [];
+            saves.push(saveData);
+            localStorage.setItem('saves', JSON.stringify(saves));
+            customAlert("Game saved!");
+        } else {
+            const saves = JSON.parse(localStorage.getItem('saves')) || [];
+            saves[saves.length - 1] = saveData;
+            localStorage.setItem('saves', JSON.stringify(saves));
+            customAlert("Game saved!");
+        }
+    });
 }
 
 function loadGame() {
     const saves = JSON.parse(localStorage.getItem('saves')) || [];
     if (saves.length === 0) {
-        alert("No saved games found!");
+        customAlert("No saved games found!");
         return;
     }
 
     const saveOptions = saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n');
-    const selectedSaveIndex = prompt(`Select a save slot to load:\n${saveOptions}`);
+    customPrompt(`Select a save slot to load:\n${saveOptions}`, function(selectedSaveIndex) {
+        selectedSaveIndex = parseInt(selectedSaveIndex, 10);
 
-    const selectedSave = saves[selectedSaveIndex - 1];
-    if (selectedSave) {
-        xp = selectedSave.xp;
-        hp = selectedSave.hp;
-        gold = selectedSave.gold;
-        currentWeapon = selectedSave.currentWeapon;
-        inventory = selectedSave.inventory;
-        playerName = selectedSave.playerName;
-        updateStats();
-        setDisplay([intro], "none");
-        setDisplay([text, controls, stats,saveGameBtn,loadGameBtn,newGameBtn], "block");
-        alert("Game loaded!");
-    } else {
-        alert("Invalid selection!");
+        if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
+            const selectedSave = saves[selectedSaveIndex - 1];
+            xp = selectedSave.xp;
+            hp = selectedSave.hp;
+            gold = selectedSave.gold;
+            currentWeapon = selectedSave.currentWeapon;
+            inventory = selectedSave.inventory;
+            playerName = selectedSave.playerName;
+            updateStats();
+            setDisplay([intro], "none");
+            setDisplay([text, controls, stats, saveGameBtn, loadGameBtn, newGameBtn], "block");
+            customAlert("Game loaded!");
+        } else {
+            customAlert("Invalid selection!");
+        }
+    });
+}
+
+// Alert-prompt-confirm remplace
+const universalPopup = document.getElementById('universal-popup');
+const popupMessage = document.getElementById('popup-message');
+const popupInput = document.getElementById('popup-input');
+const popupOk = document.getElementById('popup-ok');
+const popupCancel = document.getElementById('popup-cancel');
+const popupClose = document.getElementById('popup-close');
+
+function showPopup({ type, message, callback }) {
+    popupMessage.innerText = message;
+    popupInput.style.display = 'none';
+    popupOk.style.display = 'none';
+    popupCancel.style.display = 'none';
+    
+    if (type === 'alert') {
+        popupOk.style.display = 'inline-block';
+        popupOk.onclick = () => {
+            universalPopup.style.display = 'none';
+            if (callback) callback();
+        };
+    } else if (type === 'prompt') {
+        popupInput.style.display = 'block';
+        popupOk.style.display = 'inline-block';
+        popupOk.onclick = () => {
+            const inputValue = popupInput.value;
+            universalPopup.style.display = 'none';
+            if (callback) callback(inputValue);
+        };
+        popupInput.onkeydown = (event) => {
+            if (event.key === 'Enter') {
+                const inputValue = popupInput.value;
+                universalPopup.style.display = 'none';
+                if (callback) callback(inputValue);
+            }
+        };
+    } else if (type === 'confirm') {
+        popupOk.style.display = 'inline-block';
+        popupCancel.style.display = 'inline-block';
+        popupOk.onclick = () => {
+            universalPopup.style.display = 'none';
+            if (callback) callback(true);
+        };
+        popupCancel.onclick = () => {
+            universalPopup.style.display = 'none';
+            if (callback) callback(false);
+        };
+    }
+
+    universalPopup.style.display = 'block';
+}
+
+popupClose.onclick = function() {
+    universalPopup.style.display = 'none';
+}
+
+window.onclick = function(event) {
+    if (event.target == universalPopup) {
+        universalPopup.style.display = 'none';
     }
 }
 
+function customAlert(message) {
+    showPopup({ type: 'alert', message });
+}
+
+function customPrompt(message, callback) {
+    showPopup({ type: 'prompt', message, callback });
+}
+
+function customConfirm(message, callback) {
+    showPopup({ type: 'confirm', message, callback });
+}
