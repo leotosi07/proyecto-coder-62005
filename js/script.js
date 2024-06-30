@@ -95,8 +95,8 @@ const locations = [
     },
     {
         name: "kill enemy",
-        buttonText: ["Go to town entrance", "Go to town entrance", "Go to town entrance"],
-        buttonFunctions: [goTown, goTown, easterEgg],
+        buttonText: ["Go to town entrance", "Go to dungeon", "Go to town entrance"],
+        buttonFunctions: [goTown, goDungeon, easterEgg],
         text: 'The enemy screams "Arg!" as it dies. You gain experience points and find gold.'
     },
     {
@@ -249,7 +249,7 @@ function fightEnemy(index) {
 function goFight() {
     update(locations[3]);
     enemyHp = enemys[fighting].hp;
-    enemyStats.style.display = "block";
+    setDisplay([enemyStats], "block");
     enemyNameText.innerText = enemys[fighting].name;
     enemyHpText.innerText = enemyHp;
 }
