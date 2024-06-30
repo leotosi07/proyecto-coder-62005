@@ -12,8 +12,9 @@ const buttonIds = ["#button1", "#button2", "#button3"];
 /*DOM*/
 
 
-
-
+const newGame = document.getElementById('newgame');
+const loadGame = document.getElementById('loadgame');
+const saveGame = document.getElementById('savegame');
 const [button1, button2, button3] = buttonIds.map(id => document.querySelector(id));
 const text = document.querySelector("#text");
 const xpText = document.querySelector("#xpText");

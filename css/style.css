@@ -62,3 +62,15 @@ body {
     padding: 10px;
 
 }
+#main {
+    max-width: 520px;
+    max-height: 100px;
+    margin: 0 auto;
+    padding: 2px 10px;
+    display: flex;
+    justify-content: center;
+    
+}
+#main img{
+    width: 520px;
+}
