@@ -34,22 +34,22 @@ const weapons = [
     {
         name: "rod",
         power: 5,
-        cost:0,
+        cost: 0,
     },
     {
         name: "dagger",
         power: 30,
-        cost:50,
+        cost: 50,
     },
     {
         name: "rusted Axe",
         power: 50,
-        cost:100,
+        cost: 100,
     },
     {
         name: "sword",
         power: 100,
-        cost:150,
+        cost: 150,
     }
 ];
 
@@ -119,7 +119,13 @@ const locations = [
         buttonText: ["2", "8", "Go to town entrance?"],
         buttonFunctions: [pickTwo, pickEight, goTown],
         text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
-    }
+    },
+    {
+        name: "town intro",
+        buttonText: ["Go to store", "Go to dungeon", "Fight King"],
+        buttonFunctions: [goStore, goDungeon, fightEnemy.bind(null, 2)],
+        text: "You arrive in a town called Camelot, where you can only see a small store, ruined houses, and a huge castle. You can feel an evil energy emanating from it. You start investigating and find out that King Arthur has gone mad. He killed his closest friend Merlin and has the entire population terrified."
+    },
 ]
 
 //start game
@@ -140,8 +146,8 @@ newGameBtn.addEventListener('click', () => {
     playerForm.appendChild(submitButton);
     mainMenu.appendChild(playerForm);
 
-    playerForm.addEventListener('submit', function(event) {
-        event.preventDefault(); 
+    playerForm.addEventListener('submit', function (event) {
+        event.preventDefault();
         playerName = input.value.trim();
         if (playerName === '') {
             alert('Please enter your name.');
@@ -150,10 +156,10 @@ newGameBtn.addEventListener('click', () => {
             newGameBtn.style.display = "block";
             loadGameBtn.style.display = "block";
             saveGameBtn.style.display = "block";
-            intro.style.display="none";
-            text.style.display="block";
-            controls.style.display="block";
-            stats.style.display="block";
+            intro.style.display = "none";
+            text.style.display = "block";
+            controls.style.display = "block";
+            stats.style.display = "block";
         }
     });
 });
@@ -167,7 +173,7 @@ button3.onclick = fightEnemy.bind(null, 2);
 function update(location) {
     enemyStats.style.display = "none";
     button1.innerText = location.buttonText[0];
-    button2.innerText = location.buttonText[1];    
+    button2.innerText = location.buttonText[1];
     button3.innerText = location.buttonText[2];
     button1.onclick = location.buttonFunctions[0];
     button2.onclick = location.buttonFunctions[1];
@@ -306,12 +312,12 @@ function restart() {
     currentWeapon = 0;
     inventory = ["rod"];
     updateStats();
-    goTown();
+    update(locations[8]);
     saveGameBtn.style.display = "none";
-    intro.style.display="block";
-    text.style.display="none";
-    controls.style.display="none";
-    stats.style.display="none";
+    intro.style.display = "block";
+    text.style.display = "none";
+    controls.style.display = "none";
+    stats.style.display = "none";
 }
 
 function easterEgg() {
