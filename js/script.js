@@ -1,6 +1,6 @@
 let xp = 0;
 let hp = 100;
-let gold = 50;
+let gold = 30;
 let currentWeapon = 0;
 let fighting;
 let monterHp;
@@ -10,9 +10,6 @@ let playerName = '';
 const buttonIds = ["#button1", "#button2", "#button3"];
 
 /*DOM*/
-
-
-
 
 const mainMenu = document.getElementById('menu')
 const newGameBtn = document.getElementById('newgame');
@@ -164,6 +161,14 @@ newGameBtn.addEventListener('click', () => {
     });
 });
 
+
+
+
+loadGameBtn.onclick = loadGame;
+saveGameBtn.onclick = saveGame;
+
+
+
 // initialize buttons
 
 button1.onclick = goStore;
@@ -308,7 +313,7 @@ function winGame() {
 function restart() {
     xp = 0;
     hp = 100;
-    gold = 50;
+    gold = 30;
     currentWeapon = 0;
     inventory = ["rod"];
     updateStats();
@@ -362,3 +367,60 @@ function updateStats() {
     hpText.innerText = hp;
     xpText.innerText = xp;
 }
+
+function saveGame() {
+    const saveData = {
+        xp,
+        hp,
+        gold,
+        currentWeapon,
+        inventory,
+        playerName,
+        timestamp: new Date().toLocaleString()
+    };
+
+    const saves = JSON.parse(localStorage.getItem('saves')) || [];
+    const saveOption = confirm("Do you want to save a new slot? (OK for new slot, Cancel for overwrite)");
+
+    if (saveOption) {
+        saves.push(saveData);
+    } else {
+        saves[saves.length - 1] = saveData;
+    }
+
+    localStorage.setItem('saves', JSON.stringify(saves));
+    alert("Game saved!");
+}
+
+function loadGame() {
+    const saves = JSON.parse(localStorage.getItem('saves')) || [];
+    if (saves.length === 0) {
+        alert("No saved games found!");
+        return;
+    }
+
+    const saveOptions = saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n');
+    const selectedSaveIndex = prompt(`Select a save slot to load:\n${saveOptions}`);
+
+    const selectedSave = saves[selectedSaveIndex - 1];
+    if (selectedSave) {
+        xp = selectedSave.xp;
+        hp = selectedSave.hp;
+        gold = selectedSave.gold;
+        currentWeapon = selectedSave.currentWeapon;
+        inventory = selectedSave.inventory;
+        playerName = selectedSave.playerName;
+        updateStats();
+        newGameBtn.style.display = "block";
+        loadGameBtn.style.display = "block";
+        saveGameBtn.style.display = "block";
+        intro.style.display = "none";
+        text.style.display = "block";
+        controls.style.display = "block";
+        stats.style.display = "block";
+        alert("Game loaded!");
+    } else {
+        alert("Invalid selection!");
+    }
+}
+
