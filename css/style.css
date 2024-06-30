@@ -6,6 +6,7 @@ body {
     background-color: black;
     color: white;
     padding: 10px;
+    display: none;
 }
 
 #game {
@@ -20,12 +21,14 @@ body {
 #controls {
     border: 1px black solid;
     padding: 5px;
+    display: none;
 }
 
 #stats {
     border: 1px black solid;
     color: black;
     padding: 5px;
+    display: none;
 }
 
 #enemyStats {
@@ -38,4 +41,24 @@ body {
 
 .stat {
     padding-right: 10px;
+}
+
+#menu {
+    max-width: 500px;
+    max-height: 400px;
+    background-color: lightgray;
+    color: white;
+    margin: 0 auto;
+    padding: 10px; 
+    display: flex;
+    justify-content: space-around;
+}
+#savegame{
+    display: none;
+}
+#intro {
+    background-color: black;
+    color: white;
+    padding: 10px;
+
 }

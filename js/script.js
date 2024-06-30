@@ -8,8 +8,13 @@ let inventory = ["rod"];
 let playerName = '';
 
 const buttonIds = ["#button1", "#button2", "#button3"];
-const [button1, button2, button3] = buttonIds.map(id => document.querySelector(id));
 
+/*DOM*/
+
+
+
+
+const [button1, button2, button3] = buttonIds.map(id => document.querySelector(id));
 const text = document.querySelector("#text");
 const xpText = document.querySelector("#xpText");
 const hpText = document.querySelector("#hpText");
