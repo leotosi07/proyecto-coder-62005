@@ -127,8 +127,7 @@ const locations = [
 
 //start game
 newGameBtn.addEventListener('click', () => {
-    newGameBtn.style.display = "none";
-    loadGameBtn.style.display = "none";
+    setDisplay([newGameBtn, loadGameBtn], "none");
     restart()
 
     let playerForm = document.createElement('form');
@@ -149,19 +148,18 @@ newGameBtn.addEventListener('click', () => {
         if (playerName === '') {
             alert('Please enter your name.');
         } else {
-            playerForm.style.display = "none";
-            newGameBtn.style.display = "block";
-            loadGameBtn.style.display = "block";
-            saveGameBtn.style.display = "block";
-            intro.style.display = "none";
-            text.style.display = "block";
-            controls.style.display = "block";
-            stats.style.display = "block";
+            setDisplay([newGameBtn, loadGameBtn, saveGameBtn,text,controls,stats], "block");
+            setDisplay([intro, playerForm], "none");
+
         }
     });
 });
 
-
+function setDisplay(elements, displayStyle) {
+    elements.forEach(element => {
+        element.style.display = displayStyle;
+    });
+}
 
 
 loadGameBtn.onclick = loadGame;
@@ -318,11 +316,8 @@ function restart() {
     inventory = ["rod"];
     updateStats();
     update(locations[8]);
-    saveGameBtn.style.display = "none";
-    intro.style.display = "block";
-    text.style.display = "none";
-    controls.style.display = "none";
-    stats.style.display = "none";
+    setDisplay([intro], "block");
+    setDisplay([stats, controls,text,saveGameBtn], "none");
 }
 
 function easterEgg() {
@@ -411,13 +406,8 @@ function loadGame() {
         inventory = selectedSave.inventory;
         playerName = selectedSave.playerName;
         updateStats();
-        newGameBtn.style.display = "block";
-        loadGameBtn.style.display = "block";
-        saveGameBtn.style.display = "block";
-        intro.style.display = "none";
-        text.style.display = "block";
-        controls.style.display = "block";
-        stats.style.display = "block";
+        setDisplay([intro], "none");
+        setDisplay([text, controls, stats,saveGameBtn,loadGameBtn,newGameBtn], "block");
         alert("Game loaded!");
     } else {
         alert("Invalid selection!");
