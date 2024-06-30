@@ -173,6 +173,8 @@ function buyWeapon() {
             text.innerText = "You now have a " + newWeapon + ".";
             inventory.push(newWeapon);
             text.innerText += " In your inventory you have: " + inventory;
+            locations[1]["button text"][1] = `Buy weapon (${weapons[currentWeapon + 1] ? weapons[currentWeapon + 1].cost : "No"} gold)`;
+            update(locations[1]);
         } else {
             text.innerText = "You do not have enough gold to buy a weapon.";
         }
