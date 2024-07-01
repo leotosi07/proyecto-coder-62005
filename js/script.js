@@ -206,7 +206,10 @@ function buyHp() {
     }
 
 }
-
+function updateButton2(location) {
+    button2.innerText = location.buttonText[1];
+    button2.onclick = location.buttonFunctions[1];
+}
 function buyWeapon() {
     if (currentWeapon < weapons.length - 1) {
         if (gold >= weapons[currentWeapon + 1].cost) {
@@ -217,7 +220,7 @@ function buyWeapon() {
             inventory.push(newWeapon);
             text.innerText += " In your inventory you have: " + inventory;
             locations[1].buttonText[1] = `Buy weapon (${weapons[currentWeapon + 1] ? weapons[currentWeapon + 1].cost : "No"} gold)`;
-            update(locations[1]);
+            updateButton2(locations[1]);
             updateStats();
         } else {
             text.innerText = "You do not have enough gold to buy a weapon.";
@@ -272,16 +275,11 @@ function attack() {
     } else if (enemyHp <= 0) {
         fighting === 2 ? winGame() : defeatEnemy();
     }
-
-    if (Math.random() <= .1 && inventory.length !== 1) {
-        text.innerText += " Your " + inventory.pop() + " breaks.";
-        currentWeapon--;
-    }
 }
 
 function getEnemyAttackValue(level) {
     let hit = (level * 5) - (Math.floor(Math.random() * xp));
-    return hit;
+    return Math.max(hit, 0);
 }
 
 function isEnemyHit() {
