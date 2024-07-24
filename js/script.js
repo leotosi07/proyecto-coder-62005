@@ -146,9 +146,27 @@ newGameBtn.addEventListener('click', () => {
         event.preventDefault();
         playerName = input.value.trim();
         if (playerName === '') {
-            customAlert('Please enter your name.');
+            Swal.fire({
+                title: 'Please enter your name.',
+                width: '25em',
+                position: 'top',
+                showClass: {
+                    popup: `
+                    animate__animated
+                    animate__backInDown
+                    animate__faster
+                    `
+                },
+                hideClass: {
+                    popup: `
+                    animate__animated
+                    animate__backOutUp
+                    animate__faster
+                    `
+                }
+            });
         } else {
-            setDisplay([newGameBtn, loadGameBtn, saveGameBtn,text,controls,stats], "block");
+            setDisplay([newGameBtn, loadGameBtn, saveGameBtn, text, controls, stats], "block");
             setDisplay([intro, playerForm], "none");
 
         }
@@ -315,7 +333,7 @@ function restart() {
     updateStats();
     update(locations[8]);
     setDisplay([intro], "block");
-    setDisplay([stats, controls,text,saveGameBtn], "none");
+    setDisplay([stats, controls, text, saveGameBtn], "none");
 }
 
 function easterEgg() {
@@ -361,44 +379,68 @@ function updateStats() {
     xpText.innerText = xp;
 }
 
-function saveGame() {
-    const saveData = {
-        xp,
-        hp,
-        gold,
-        currentWeapon,
-        inventory,
-        playerName,
-        timestamp: new Date().toLocaleString()
-    };
-
-    customConfirm("Do you want to save a new slot? (OK for new slot, Cancel for overwrite)", (confirmResult) => {
-        if (confirmResult) {
-            const saves = JSON.parse(localStorage.getItem('saves')) || [];
-            saves.push(saveData);
-            localStorage.setItem('saves', JSON.stringify(saves));
-            customAlert("Game saved!");
-        } else {
-            const saves = JSON.parse(localStorage.getItem('saves')) || [];
-            saves[saves.length - 1] = saveData;
-            localStorage.setItem('saves', JSON.stringify(saves));
-            customAlert("Game saved!");
-        }
-    });
-}
-
 function loadGame() {
     const saves = JSON.parse(localStorage.getItem('saves')) || [];
     if (saves.length === 0) {
-        customAlert("No saved games found!");
+        Swal.fire({
+            icon: 'error',
+            title: 'No saved games found!',
+            position: 'top',
+            showClass: {
+                popup: `
+                animate__animated
+                animate__backInDown
+                animate__faster
+                `
+            },
+            hideClass: {
+                popup: `
+                animate__animated
+                animate__backOutUp
+                animate__faster
+                `
+            }
+            
+        });
         return;
     }
 
     const saveOptions = saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n');
-    customPrompt(`Select a save slot to load:\n${saveOptions}`, function(selectedSaveIndex) {
-        selectedSaveIndex = parseInt(selectedSaveIndex, 10);
 
-        if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
+    Swal.fire({
+        title: 'Select a save slot to load:',
+        input: 'text',
+        inputLabel: saveOptions,
+        position: 'top',
+        showClass: {
+            popup: `
+            animate__animated
+            animate__backInDown
+            animate__faster
+            `
+        },
+        hideClass: {
+            popup: `
+            animate__animated
+            animate__backOutUp
+            animate__faster
+            `
+        },
+        showCancelButton: true,
+        inputValidator: (value) => {
+            return new Promise((resolve) => {
+                const selectedSaveIndex = parseInt(value, 10);
+
+                if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
+                    resolve();
+                } else {
+                    resolve('Invalid selection!');
+                }
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const selectedSaveIndex = parseInt(result.value, 10);
             const selectedSave = saves[selectedSaveIndex - 1];
             xp = selectedSave.xp;
             hp = selectedSave.hp;
@@ -409,82 +451,129 @@ function loadGame() {
             updateStats();
             setDisplay([intro], "none");
             setDisplay([text, controls, stats, saveGameBtn, loadGameBtn, newGameBtn], "block");
-            customAlert("Game loaded!");
-        } else {
-            customAlert("Invalid selection!");
+            Swal.fire({
+                position: 'top',
+                icon: 'success',
+                title: 'Game loaded!'
+            });
         }
     });
 }
 
-// Alert-prompt-confirm remplace
-const universalPopup = document.getElementById('universal-popup');
-const popupMessage = document.getElementById('popup-message');
-const popupInput = document.getElementById('popup-input');
-const popupOk = document.getElementById('popup-ok');
-const popupCancel = document.getElementById('popup-cancel');
-const popupClose = document.getElementById('popup-close');
+function saveGame() {
+    const saves = JSON.parse(localStorage.getItem('saves')) || [];
 
-function showPopup({ type, message, callback }) {
-    popupMessage.innerText = message;
-    popupInput.style.display = 'none';
-    popupOk.style.display = 'none';
-    popupCancel.style.display = 'none';
-    
-    if (type === 'alert') {
-        popupOk.style.display = 'inline-block';
-        popupOk.onclick = () => {
-            universalPopup.style.display = 'none';
-            if (callback) callback();
-        };
-    } else if (type === 'prompt') {
-        popupInput.style.display = 'block';
-        popupOk.style.display = 'inline-block';
-        popupOk.onclick = () => {
-            const inputValue = popupInput.value;
-            universalPopup.style.display = 'none';
-            if (callback) callback(inputValue);
-        };
-        popupInput.onkeydown = (event) => {
-            if (event.key === 'Enter') {
-                const inputValue = popupInput.value;
-                universalPopup.style.display = 'none';
-                if (callback) callback(inputValue);
+    Swal.fire({
+        title: 'Do you want to save a new slot (ok for new slot, cancel for overwrite unless it is a new game)?',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        position: 'top',
+        showClass: {
+            popup: `
+            animate__animated
+            animate__backInDown
+            animate__faster
+            `
+        },
+        hideClass: {
+            popup: `
+            animate__animated
+            animate__backOutUp
+            animate__faster
+            `
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            if (saves.length >= 9) {
+                Swal.fire({
+                    title: 'No more slots available, you need to overwrite.',
+                    input: 'text',
+                    position: 'top',
+                    inputLabel: saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n'),
+                    inputValidator: (value) => {
+                        return new Promise((resolve) => {
+                            const selectedSaveIndex = parseInt(value, 10);
+
+                            if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
+                                resolve();
+                            } else {
+                                resolve('Invalid selection!');
+                            }
+                        });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const selectedSaveIndex = parseInt(result.value, 10) - 1;
+                        saves[selectedSaveIndex] = createSaveData();
+                        localStorage.setItem('saves', JSON.stringify(saves));
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Slot overwritten!',
+                            position: 'top'
+                        });
+                    }
+                });
+            } else {
+                saves.push(createSaveData());
+                localStorage.setItem('saves', JSON.stringify(saves));
+                Swal.fire({
+                    icon: 'success',
+                    title: 'New slot created!',
+                    position: 'top'
+                });
             }
-        };
-    } else if (type === 'confirm') {
-        popupOk.style.display = 'inline-block';
-        popupCancel.style.display = 'inline-block';
-        popupOk.onclick = () => {
-            universalPopup.style.display = 'none';
-            if (callback) callback(true);
-        };
-        popupCancel.onclick = () => {
-            universalPopup.style.display = 'none';
-            if (callback) callback(false);
-        };
-    }
+        } else {
+            if (saves.length >= 9) {
+                Swal.fire({
+                    title: 'No more slots available, you need to overwrite.',
+                    input: 'text',
+                    position: 'top',
+                    inputLabel: saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n'),
+                    inputValidator: (value) => {
+                        return new Promise((resolve) => {
+                            const selectedSaveIndex = parseInt(value, 10);
 
-    universalPopup.style.display = 'block';
+                            if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
+                                resolve();
+                            } else {
+                                resolve('Invalid selection!');
+                            }
+                        });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const selectedSaveIndex = parseInt(result.value, 10) - 1;
+                        saves[selectedSaveIndex] = createSaveData();
+                        localStorage.setItem('saves', JSON.stringify(saves));
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: 'Slot overwritten!'
+                        });
+                    }
+                });
+            } else {
+                saves.push(createSaveData());
+                localStorage.setItem('saves', JSON.stringify(saves));
+                Swal.fire({
+                    position: 'top',
+                    icon: 'success',
+                    title: 'New slot created!'
+                });
+            }
+        }
+    });
 }
 
-popupClose.onclick = function() {
-    universalPopup.style.display = 'none';
-}
-
-window.onclick = function(event) {
-    if (event.target == universalPopup) {
-        universalPopup.style.display = 'none';
-    }
-}
-
-function customAlert(message) {
-    showPopup({ type: 'alert', message });
-}
-
-function customPrompt(message, callback) {
-    showPopup({ type: 'prompt', message, callback });
-}
-
-function customConfirm(message, callback) {
-    showPopup({ type: 'confirm', message, callback });
+function createSaveData() {
+    return {
+        xp: xp,
+        hp: hp,
+        gold: gold,
+        currentWeapon: currentWeapon,
+        inventory: inventory,
+        playerName: playerName,
+        timestamp: new Date().toLocaleString()
+    };
 }

@@ -85,52 +85,16 @@ footer {
     width: 100%;
 }
 
-/* Popup container */
-.popup {
-    display: none; 
-    position: fixed; 
-    z-index: 1; 
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; 
-    background-color: rgb(0,0,0); 
-    background-color: rgba(0,0,0,0.4); 
+.swal2-title{
+    font-size:20px !important;
 }
-
-.popup-content {
-    background-color: #fefefe;
-    margin: 0% auto; 
-    padding: 20px;
-    border: 1px solid #888;
-    width: 20%; 
+.swal2-confirm,.swal2-cancel {
+    font-size:14px !important;
+    background-color: black;
 }
-
-.popup-close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.popup-close:hover,
-.popup-close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-#popup-input {
-    width: calc(100% - 40px);
-    margin: 10px 0;
-}
-
-#popup-buttons {
-    text-align: center;
-    margin-top: 10px;
-}
-
-#popup-buttons button {
-    margin: 0 5px;
+.swal2-popup{
+    background-color:#e0dfdf;
+    border-color: black;
+    border-style: solid;
+    border-radius: 1rem;
 }
