@@ -35,9 +35,9 @@ let locations = [];
 export async function loadJSON() {
     try {
         const [weaponsResponse, enemiesResponse, locationsResponse] = await Promise.all([
+            fetch('https://raw.githubusercontent.com/leotosi07/proyecto-coder-62005/main/db/weapons.JSON'),
             fetch('https://raw.githubusercontent.com/leotosi07/proyecto-coder-62005/main/db/enemies.JSON'),
-            fetch('../db/enemies.JSON'),
-            fetch('../db/locations.JSON')
+            fetch('https://raw.githubusercontent.com/leotosi07/proyecto-coder-62005/main/db/locations.JSON')
         ]);
 
         weapons = await weaponsResponse.json();
