@@ -1,0 +1,6 @@
+[
+    { "name": "rod", "power": 5, "cost": 0 },
+    { "name": "dagger", "power": 30, "cost": 50 },
+    { "name": "rusted Axe", "power": 50, "cost": 100 },
+    { "name": "sword", "power": 100, "cost": 150 }
+]

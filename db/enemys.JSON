@@ -1,0 +1,5 @@
+[
+    { "name": "Skeleton", "level": 2, "hp": 15 },
+    { "name": "Camelot Soldier", "level": 8, "hp": 60 },
+    { "name": "King", "level": 20, "hp": 300 }
+]

@@ -1,0 +1,56 @@
+[
+    {
+        "name": "town entrance",
+        "buttonText": ["Go to store", "Go to dungeon", "Fight King"],
+        "buttonFunctions": ["goStore", "goDungeon", "fightEnemy(2)"],
+        "text": "You are in the town entrance. You see a sign that says \"Store.\""
+    },
+    {
+        "name": "store",
+        "buttonText": ["Buy 10 hp (10 gold)", "Buy weapon (50 gold)", "Go to town entrance"],
+        "buttonFunctions": ["buyHp", "buyWeapon", "goTown"],
+        "text": "You enter the store."
+    },
+    {
+        "name": "dungeon",
+        "buttonText": ["Fight Skeleton", "Fight Camelot Soldier", "Go to town entrance"],
+        "buttonFunctions": ["fightEnemy(0)", "fightEnemy(1)", "goTown"],
+        "text": "You enter the dungeon. You see some enemies."
+    },
+    {
+        "name": "fight",
+        "buttonText": ["Attack", "Dodge", "Run"],
+        "buttonFunctions": ["attack", "dodge", "goTown"],
+        "text": "You are fighting an enemy."
+    },
+    {
+        "name": "kill enemy",
+        "buttonText": ["Go to town entrance", "Go to dungeon", "Go to town entrance"],
+        "buttonFunctions": ["goTown", "goDungeon", "easterEgg"],
+        "text": "The enemy screams \"Arg!\" as it dies. You gain experience points and find gold."
+    },
+    {
+        "name": "lose",
+        "buttonText": ["REPLAY?", "REPLAY?", "REPLAY?"],
+        "buttonFunctions": ["restart", "restart", "restart"],
+        "text": "You die. ☠️"
+    },
+    {
+        "name": "win",
+        "buttonText": ["REPLAY?", "REPLAY?", "REPLAY?"],
+        "buttonFunctions": ["restart", "restart", "restart"],
+        "text": "You defeat the King! YOU WIN THE GAME! 🎉"
+    },
+    {
+        "name": "easter egg",
+        "buttonText": ["2", "8", "Go to town entrance?"],
+        "buttonFunctions": ["pickTwo", "pickEight", "goTown"],
+        "text": "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
+    },
+    {
+        "name": "town intro",
+        "buttonText": ["Go to store", "Go to dungeon", "Fight King"],
+        "buttonFunctions": ["goStore", "goDungeon", "fightEnemy(2)"],
+        "text": "You arrive in a town called Camelot, where you can only see a small store, ruined houses, and a huge castle. You can feel an evil energy emanating from it. You start investigating and find out that King Arthur has gone mad. He killed his closest friend Merlin and has the entire population terrified."
+    }
+]
