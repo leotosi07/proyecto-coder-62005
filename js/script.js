@@ -27,103 +27,68 @@ const enemyStats = document.querySelector("#enemyStats");
 const enemyNameText = document.querySelector("#enemyName");
 const enemyHpText = document.querySelector("#enemyHp");
 
-const weapons = [
-    {
-        name: "rod",
-        power: 5,
-        cost: 0,
-    },
-    {
-        name: "dagger",
-        power: 30,
-        cost: 50,
-    },
-    {
-        name: "rusted Axe",
-        power: 50,
-        cost: 100,
-    },
-    {
-        name: "sword",
-        power: 100,
-        cost: 150,
-    }
-];
+let weapons = [];
+let enemies = [];
+let locations = [];
 
-const enemies = [
-    {
-        name: "Skeleton",
-        level: 2,
-        hp: 15
-    },
-    {
-        name: "Camelot Soldier",
-        level: 8,
-        hp: 60
-    },
-    {
-        name: "King",
-        level: 20,
-        hp: 300
-    }
-];
+// Función para cargar JSON
+async function loadJSON() {
+    try {
+        const [weaponsResponse, enemiesResponse, locationsResponse] = await Promise.all([
+            fetch('../db/weapons.JSON'),
+            fetch('../db/enemies.JSON'),
+            fetch('../db/locations.JSON')
+        ]);
 
-const locations = [
-    {
-        name: "town entrance",
-        buttonText: ["Go to store", "Go to dungeon", "Fight King"],
-        buttonFunctions: [goStore, goDungeon, fightEnemy.bind(null, 2)],
-        text: "You are in the town entrance. You see a sign that says \"Store.\""
-    },
-    {
-        name: "store",
-        buttonText: ["Buy 10 hp (10 gold)", `Buy weapon (50 gold)`, "Go to town entrance"],
-        buttonFunctions: [buyHp, buyWeapon, goTown],
-        text: "You enter the store."
-    },
-    {
-        name: "dungeon",
-        buttonText: ["Fight Skeleton", "Fight Camelot Soldier", "Go to town entrance"],
-        buttonFunctions: [fightEnemy.bind(null, 0), fightEnemy.bind(null, 1), goTown],
-        text: "You enter the dungeon. You see some enemies."
-    },
-    {
-        name: "fight",
-        buttonText: ["Attack", "Dodge", "Run"],
-        buttonFunctions: [attack, dodge, goTown],
-        text: "You are fighting an enemy."
-    },
-    {
-        name: "kill enemy",
-        buttonText: ["Go to town entrance", "Go to dungeon", "Go to town entrance"],
-        buttonFunctions: [goTown, goDungeon, easterEgg],
-        text: 'The enemy screams "Arg!" as it dies. You gain experience points and find gold.'
-    },
-    {
-        name: "lose",
-        buttonText: ["REPLAY?", "REPLAY?", "REPLAY?"],
-        buttonFunctions: [restart, restart, restart],
-        text: "You die. ☠️"
-    },
-    {
-        name: "win",
-        buttonText: ["REPLAY?", "REPLAY?", "REPLAY?"],
-        buttonFunctions: [restart, restart, restart],
-        text: "You defeat the King! YOU WIN THE GAME! 🎉"
-    },
-    {
-        name: "easter egg",
-        buttonText: ["2", "8", "Go to town entrance?"],
-        buttonFunctions: [pickTwo, pickEight, goTown],
-        text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
-    },
-    {
-        name: "town intro",
-        buttonText: ["Go to store", "Go to dungeon", "Fight King"],
-        buttonFunctions: [goStore, goDungeon, fightEnemy.bind(null, 2)],
-        text: "You arrive in a town called Camelot, where you can only see a small store, ruined houses, and a huge castle. You can feel an evil energy emanating from it. You start investigating and find out that King Arthur has gone mad. He killed his closest friend Merlin and has the entire population terrified."
-    },
-]
+        weapons = await weaponsResponse.json();
+        enemies = await enemiesResponse.json();
+        locations = await locationsResponse.json();
+
+        console.log('Data loaded:', { weapons, enemies, locations });
+
+        startGame();
+    } catch (error) {
+        console.error('Error loading JSON data:', error);
+    }
+}
+loadJSON();
+
+function startGame() {
+    update(locations[8]);
+}
+
+
+const functionMap = {
+    goTown,
+    goStore,
+    goDungeon,
+    fightEnemy: (index) => fightEnemy(index),
+    buyHp,
+    buyWeapon,
+    attack,
+    dodge,
+    restart,
+    easterEgg,
+    pickTwo,
+    pickEight
+};
+
+// Función para ejecutar una función desde una cadena de texto
+function executeFunction(functionString) {
+    if (!weapons.length || !enemies.length || !locations.length) {
+        console.error('Data not loaded yet.');
+        return;
+    }
+
+    const functionName = functionString.split('(')[0];
+    const args = functionString.includes('(') ? functionString.match(/\((.*?)\)/)[1].split(',') : [];
+
+    if (functionMap[functionName]) {
+        functionMap[functionName](...args);
+    } else {
+        console.error(`Function ${functionName} not found in functionMap`);
+    }
+}
 
 //start game
 newGameBtn.addEventListener('click', () => {
@@ -196,9 +161,11 @@ function update(location) {
     button1.innerText = location.buttonText[0];
     button2.innerText = location.buttonText[1];
     button3.innerText = location.buttonText[2];
-    button1.onclick = location.buttonFunctions[0];
-    button2.onclick = location.buttonFunctions[1];
-    button3.onclick = location.buttonFunctions[2];
+
+    button1.onclick = () => executeFunction(location.buttonFunctions[0]);
+    button2.onclick = () => executeFunction(location.buttonFunctions[1]);
+    button3.onclick = () => executeFunction(location.buttonFunctions[2]);
+
     text.innerText = location.text;
 }
 
@@ -400,7 +367,7 @@ function loadGame() {
                 animate__faster
                 `
             }
-            
+
         });
         return;
     }
