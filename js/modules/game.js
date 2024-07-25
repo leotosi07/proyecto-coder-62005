@@ -51,7 +51,6 @@ export async function loadJSON() {
         console.error('Error loading JSON data:', error);
     }
 }
-loadJSON();
 
 export function startGame() {
     update(locations[8]);
