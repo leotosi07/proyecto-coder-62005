@@ -50,7 +50,7 @@ const weapons = [
     }
 ];
 
-const enemys = [
+const enemies = [
     {
         name: "Skeleton",
         level: 2,
@@ -269,18 +269,18 @@ function fightEnemy(index) {
 
 function goFight() {
     update(locations[3]);
-    enemyHp = enemys[fighting].hp;
+    enemyHp = enemies[fighting].hp;
     setDisplay([enemyStats], "block");
-    enemyNameText.innerText = enemys[fighting].name;
+    enemyNameText.innerText = enemies[fighting].name;
     enemyHpText.innerText = enemyHp;
 }
 
 function attack() {
-    text.innerText = "The " + enemys[fighting].name + " attacks.";
+    text.innerText = "The " + enemies[fighting].name + " attacks.";
     text.innerText += " You attack it with your " + weapons[currentWeapon].name + ".";
 
     if (isEnemyHit()) {
-        hp -= getEnemyAttackValue(enemys[fighting].level);
+        hp -= getEnemyAttackValue(enemies[fighting].level);
     } else {
         text.innerText += " You miss.";
     }
@@ -306,12 +306,12 @@ function isEnemyHit() {
 
 
 function dodge() {
-    text.innerText = "You dodge the attack from the " + enemys[fighting].name + ".";
+    text.innerText = "You dodge the attack from the " + enemies[fighting].name + ".";
 }
 
 function defeatEnemy() {
-    gold += Math.floor(enemys[fighting].level * 6.7)
-    xp += enemys[fighting].level;
+    gold += Math.floor(enemies[fighting].level * 6.7)
+    xp += enemies[fighting].level;
     updateStats();
     update(locations[4]);
 }
