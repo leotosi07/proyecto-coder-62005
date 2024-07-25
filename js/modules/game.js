@@ -257,7 +257,7 @@ function attack() {
     if (hp <= 0) {
         lose();
     } else if (enemyHp <= 0) {
-        fighting === 2 ? winGame() : defeatEnemy();
+        enemies[fighting].name === "King" ? winGame() : defeatEnemy();
     }
 }
 
