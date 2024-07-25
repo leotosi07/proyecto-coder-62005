@@ -40,9 +40,9 @@ export async function loadJSON() {
             fetch('../db/locations.JSON')
         ]);
 
-        weapons = await weaponsResponse.JSON();
-        enemies = await enemiesResponse.JSON();
-        locations = await locationsResponse.JSON();
+        weapons = await weaponsResponse.json();
+        enemies = await enemiesResponse.json();
+        locations = await locationsResponse.json();
 
         console.log('Data loaded:', { weapons, enemies, locations });
 
