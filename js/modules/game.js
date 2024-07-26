@@ -1,3 +1,6 @@
+import { button1,button2, button3,mainMenu,newGameBtn,loadGameBtn,saveGameBtn,controls,stats,intro,text,xpText,hpText,goldText,enemyStats,enemyNameText,enemyHpText } from "./dom.js";
+
+
 let xp = 0;
 let hp = 100;
 let gold = 30;
@@ -7,25 +10,7 @@ let inventory = ["rod"];
 let playerName = '';
 let enemyHp = ''
 
-const buttonIds = ["#button1", "#button2", "#button3"];
 
-/*DOM*/
-
-const mainMenu = document.getElementById('menu')
-const newGameBtn = document.getElementById('newgame');
-const loadGameBtn = document.getElementById('loadgame');
-const saveGameBtn = document.getElementById('savegame');
-const [button1, button2, button3] = buttonIds.map(id => document.querySelector(id));
-const controls = document.getElementById('controls')
-const stats = document.getElementById('stats')
-const intro = document.querySelector("#intro");
-const text = document.querySelector("#text");
-const xpText = document.querySelector("#xpText");
-const hpText = document.querySelector("#hpText");
-const goldText = document.querySelector("#goldText");
-const enemyStats = document.querySelector("#enemyStats");
-const enemyNameText = document.querySelector("#enemyName");
-const enemyHpText = document.querySelector("#enemyHp");
 
 let weapons = [];
 let enemies = [];
