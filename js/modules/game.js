@@ -1,4 +1,4 @@
-import { button1,button2, button3,mainMenu,newGameBtn,loadGameBtn,saveGameBtn,controls,stats,intro,text,xpText,hpText,goldText,enemyStats,enemyNameText,enemyHpText } from "./dom.js";
+import { button1, button2, button3, mainMenu, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text, xpText, hpText, goldText, enemyStats, enemyNameText, enemyHpText } from "./dom.js";
 
 
 let xp = 0;
@@ -15,6 +15,28 @@ let enemyHp = ''
 let weapons = [];
 let enemies = [];
 let locations = [];
+
+
+/*Cambios para modularizar*/
+export async function initializeGame() {
+    await loadJSON();
+    setupEventListeners();
+}
+export function getPlayerStats() {
+    return { xp, hp, gold, currentWeapon, inventory, playerName };
+}
+export function updatePlayerStats(newStats) {
+    xp = newStats.xp;
+    hp = newStats.hp;
+    gold = newStats.gold;
+    currentWeapon = newStats.currentWeapon;
+    inventory = newStats.inventory;
+    playerName = newStats.playerName;
+}
+
+
+
+
 
 // Función para cargar JSON
 export async function loadJSON() {
@@ -75,52 +97,62 @@ function executeFunction(functionString) {
 }
 
 //start game
-newGameBtn.addEventListener('click', () => {
-    setDisplay([newGameBtn, loadGameBtn], "none");
-    restart()
+export function setupEventListeners() {
+    newGameBtn.addEventListener('click', () => {
+        setDisplay([newGameBtn, loadGameBtn], "none");
+        restart()
 
-    let playerForm = document.createElement('form');
-    let input = document.createElement('input');
-    input.type = 'text';
-    input.name = 'playerName';
-    input.placeholder = 'Enter your name';
-    let submitButton = document.createElement('button');
-    submitButton.type = 'submit';
-    submitButton.textContent = 'Iniciar';
-    playerForm.appendChild(input);
-    playerForm.appendChild(submitButton);
-    mainMenu.appendChild(playerForm);
+        let playerForm = document.createElement('form');
+        let input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'playerName';
+        input.placeholder = 'Enter your name';
+        let submitButton = document.createElement('button');
+        submitButton.type = 'submit';
+        submitButton.textContent = 'Iniciar';
+        playerForm.appendChild(input);
+        playerForm.appendChild(submitButton);
+        mainMenu.appendChild(playerForm);
 
-    playerForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        playerName = input.value.trim();
-        if (playerName === '') {
-            Swal.fire({
-                title: 'Please enter your name.',
-                width: '25em',
-                position: 'top',
-                showClass: {
-                    popup: `
-                    animate__animated
-                    animate__backInDown
-                    animate__faster
-                    `
-                },
-                hideClass: {
-                    popup: `
-                    animate__animated
-                    animate__backOutUp
-                    animate__faster
-                    `
-                }
-            });
-        } else {
-            setDisplay([newGameBtn, loadGameBtn, saveGameBtn, text, controls, stats], "block");
-            setDisplay([intro, playerForm], "none");
+        playerForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            playerName = input.value.trim();
+            if (playerName === '') {
+                Swal.fire({
+                    title: 'Please enter your name.',
+                    width: '25em',
+                    position: 'top',
+                    showClass: {
+                        popup: `
+                        animate__animated
+                        animate__backInDown
+                        animate__faster
+                        `
+                    },
+                    hideClass: {
+                        popup: `
+                        animate__animated
+                        animate__backOutUp
+                        animate__faster
+                        `
+                    }
+                });
+            } else {
+                setDisplay([newGameBtn, loadGameBtn, saveGameBtn, text, controls, stats], "block");
+                setDisplay([intro, playerForm], "none");
 
-        }
+            }
+        });
     });
-});
+    loadGameBtn.addEventListener('click', () => {
+        loadGame()
+    });
+    saveGameBtn.addEventListener('click', () => {
+        saveGame()
+    });
+}
+
+
 
 function setDisplay(elements, displayStyle) {
     elements.forEach(element => {
@@ -129,8 +161,7 @@ function setDisplay(elements, displayStyle) {
 }
 
 
-loadGameBtn.onclick = loadGame;
-saveGameBtn.onclick = saveGame;
+
 
 
 

@@ -1,3 +1,3 @@
-import { loadJSON } from './modules/game.js';
+import { initializeGame } from './modules/game.js';
 
-loadJSON()
+initializeGame()
