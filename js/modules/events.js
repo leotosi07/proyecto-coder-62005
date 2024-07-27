@@ -5,10 +5,8 @@ import {  startGame, restart,loadGame,saveGame  } from "./game.js";
 export let weapons = [];
 export let enemies = [];
 export let locations = [];
-
 export let playerName = '';
 
-/*Cambios para modularizar*/
 export async function initializeGame() {
     await loadJSON();
     setupEventListeners();
