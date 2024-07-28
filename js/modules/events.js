@@ -1,11 +1,11 @@
 import {  mainMenu, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text } from "./dom.js";
-import {  startGame, restart,loadGame,saveGame  } from "./game.js";
+import {  startGame, restart,loadGame,saveGame,gameState  } from "./game.js";
 
 
 export let weapons = [];
 export let enemies = [];
 export let locations = [];
-export let playerName = '';
+
 
 export async function initializeGame() {
     await loadJSON();
@@ -51,8 +51,8 @@ export function setupEventListeners() {
 
         playerForm.addEventListener('submit', function (event) {
             event.preventDefault();
-            playerName = input.value.trim();
-            if (playerName === '') {
+            gameState.playerName = input.value.trim();
+            if (gameState.playerName === '') {
                 Swal.fire({
                     title: 'Please enter your name.',
                     width: '25em',

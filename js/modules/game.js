@@ -1,14 +1,16 @@
 import { button1, button2, button3, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text, xpText, hpText, goldText, enemyStats, enemyNameText, enemyHpText } from "./dom.js";
-import { weapons, enemies, locations,setDisplay,playerName } from "./events.js";
+import { weapons, enemies, locations,setDisplay } from "./events.js";
 
-export let xp = 0;
-export let hp = 100;
-export let gold = 30;
-export let currentWeapon = 0;
-export let fighting;
-export let inventory = ["rod"];
-
-export let enemyHp = ''
+export const gameState = {
+    xp: 0,
+    hp: 100,
+    gold: 30,
+    currentWeapon: 0,
+    fighting: null,
+    inventory: ["rod"],
+    enemyHp: '',
+    playerName: ''
+};
 
 
 export function startGame() {
@@ -86,9 +88,9 @@ export function goDungeon() {
 }
 
 export function buyHp() {
-    if (gold >= 10) {
-        gold -= 10;
-        hp += 10;
+    if (gameState.gold >= 10) {
+        gameState.gold -= 10;
+        gameState.hp += 10;
         updateStats();
     } else {
         text.innerText = "You do not have enough gold to buy hp.";
@@ -100,15 +102,15 @@ export function updateButton2(location) {
     button2.onclick = location.buttonFunctions[1];
 }
 export function buyWeapon() {
-    if (currentWeapon < weapons.length - 1) {
-        if (gold >= weapons[currentWeapon + 1].cost) {
-            gold -= weapons[currentWeapon + 1].cost;
-            currentWeapon++;
-            let newWeapon = weapons[currentWeapon].name;
+    if (gameState.currentWeapon < weapons.length - 1) {
+        if (gameState.gold >= weapons[gameState.currentWeapon + 1].cost) {
+            gameState.gold -= weapons[gameState.currentWeapon + 1].cost;
+            gameState.currentWeapon++;
+            let newWeapon = weapons[gameState.currentWeapon].name;
             text.innerText = "You now have a " + newWeapon + ".";
-            inventory.push(newWeapon);
-            text.innerText += " In your inventory you have: " + inventory;
-            locations[1].buttonText[1] = `Buy weapon (${weapons[currentWeapon + 1] ? weapons[currentWeapon + 1].cost : "No"} gold)`;
+            gameState.inventory.push(newWeapon);
+            text.innerText += " In your inventory you have: " + gameState.inventory;
+            locations[1].buttonText[1] = `Buy weapon (${weapons[gameState.currentWeapon + 1] ? weapons[gameState.currentWeapon + 1].cost : "No"} gold)`;
             updateButton2(locations[1]);
             updateStats();
         } else {
@@ -122,11 +124,11 @@ export function buyWeapon() {
 }
 
 export function sellWeapon() {
-    if (inventory.length > 1) {
-        gold += 15;
-        let currentWeapon = inventory.shift();
-        text.innerText = "You sold a " + currentWeapon + ".";
-        text.innerText += " In your inventory you have: " + inventory;
+    if (gameState.inventory.length > 1) {
+        gameState.gold += 15;
+        gameState.currentWeapon = gameState.inventory.shift();
+        text.innerText = "You sold a " + gameState.currentWeapon + ".";
+        text.innerText += " In your inventory you have: " + gameState.inventory;
         updateStats();
     } else {
         text.innerText = "Don't sell your only weapon!";
@@ -134,55 +136,55 @@ export function sellWeapon() {
 }
 
 export function fightEnemy(index) {
-    fighting = index;
+    gameState.fighting = index;
     goFight();
 }
 
 export function goFight() {
     update(locations[3]);
-    enemyHp = enemies[fighting].hp;
+    gameState.enemyHp = enemies[gameState.fighting].hp;
     setDisplay([enemyStats], "block");
-    enemyNameText.innerText = enemies[fighting].name;
-    enemyHpText.innerText = enemyHp;
+    enemyNameText.innerText = enemies[gameState.fighting].name;
+    enemyHpText.innerText = gameState.enemyHp;
 }
 
 export function attack() {
-    text.innerText = "The " + enemies[fighting].name + " attacks.";
-    text.innerText += " You attack it with your " + weapons[currentWeapon].name + ".";
+    text.innerText = "The " + enemies[gameState.fighting].name + " attacks.";
+    text.innerText += " You attack it with your " + weapons[gameState.currentWeapon].name + ".";
 
     if (isEnemyHit()) {
-        hp -= getEnemyAttackValue(enemies[fighting].level);
+        gameState.hp -= getEnemyAttackValue(enemies[gameState.fighting].level);
     } else {
         text.innerText += " You miss.";
     }
 
-    enemyHp -= weapons[currentWeapon].power + Math.floor(Math.random() * xp) + 1;
-    hpText.innerText = hp;
-    enemyHpText.innerText = enemyHp;
-    if (hp <= 0) {
+    gameState.enemyHp -= weapons[gameState.currentWeapon].power + Math.floor(Math.random() * gameState.xp) + 1;
+    hpText.innerText = gameState.hp;
+    enemyHpText.innerText = gameState.enemyHp;
+    if (gameState.hp <= 0) {
         lose();
-    } else if (enemyHp <= 0) {
-        enemies[fighting].name === "King" ? winGame() : defeatEnemy();
+    } else if (gameState.enemyHp <= 0) {
+        enemies[gameState.fighting].name === "King" ? winGame() : defeatEnemy();
     }
 }
 
 export function getEnemyAttackValue(level) {
-    let hit = (level * 5) - (Math.floor(Math.random() * xp));
+    let hit = (level * 5) - (Math.floor(Math.random() * gameState.xp));
     return Math.max(hit, 0);
 }
 
 export function isEnemyHit() {
-    return Math.random() > .2 || hp < 20;
+    return Math.random() > .2 || gameState.hp < 20;
 }
 
 
 export function dodge() {
-    text.innerText = "You dodge the attack from the " + enemies[fighting].name + ".";
+    text.innerText = "You dodge the attack from the " + enemies[gameState.fighting].name + ".";
 }
 
 export function defeatEnemy() {
-    gold += Math.floor(enemies[fighting].level * 6.7)
-    xp += enemies[fighting].level;
+    gameState.gold += Math.floor(enemies[gameState.fighting].level * 6.7)
+    gameState.xp += enemies[gameState.fighting].level;
     updateStats();
     update(locations[4]);
 }
@@ -196,11 +198,11 @@ export function winGame() {
 }
 
 export function restart() {
-    xp = 0;
-    hp = 100;
-    gold = 30;
-    currentWeapon = 0;
-    inventory = ["rod"];
+    gameState.xp = 0;
+    gameState.hp = 100;
+    gameState.gold = 30;
+    gameState.currentWeapon = 0;
+    gameState.inventory = ["rod"];
     updateStats();
     update(locations[8]);
     setDisplay([intro], "block");
@@ -233,21 +235,21 @@ export function pick(guess) {
 
     if (numbers.indexOf(guess) !== -1) {
         text.innerText += "Right! You win 20 gold!"
-        gold += 20;
+        gameState.gold += 20;
         updateStats();
     } else {
         text.innerText += "Wrong! You lose 20 hp!"
-        hp -= 20;
+        gameState.hp -= 20;
         updateStats();
-        if (hp <= 0) {
+        if (gameState.hp <= 0) {
             lose();
         }
     }
 }
 export function updateStats() {
-    goldText.innerText = gold;
-    hpText.innerText = hp;
-    xpText.innerText = xp;
+    goldText.innerText = gameState.gold;
+    hpText.innerText = gameState.hp;
+    xpText.innerText = gameState.xp;
 }
 
 export function loadGame() {
@@ -313,12 +315,12 @@ export function loadGame() {
         if (result.isConfirmed) {
             const selectedSaveIndex = parseInt(result.value, 10);
             const selectedSave = saves[selectedSaveIndex - 1];
-            xp = selectedSave.xp;
-            hp = selectedSave.hp;
-            gold = selectedSave.gold;
-            currentWeapon = selectedSave.currentWeapon;
-            inventory = selectedSave.inventory;
-            playerName = selectedSave.playerName;
+            gameState.xp = selectedSave.xp;
+            gameState.hp = selectedSave.hp;
+            gameState.gold = selectedSave.gold;
+            gameState.currentWeapon = selectedSave.currentWeapon;
+            gameState.inventory = selectedSave.inventory;
+            gameState.playerName = selectedSave.playerName;
             updateStats();
             setDisplay([intro], "none");
             setDisplay([text, controls, stats, saveGameBtn, loadGameBtn, newGameBtn], "block");
@@ -439,12 +441,12 @@ export function saveGame() {
 
 export function createSaveData() {
     return {
-        xp: xp,
-        hp: hp,
-        gold: gold,
-        currentWeapon: currentWeapon,
-        inventory: inventory,
-        playerName: playerName,
+        xp: gameState.xp,
+        hp: gameState.hp,
+        gold: gameState.gold,
+        currentWeapon: gameState.currentWeapon,
+        inventory: gameState.inventory,
+        playerName: gameState.playerName,
         timestamp: new Date().toLocaleString()
     };
 }
