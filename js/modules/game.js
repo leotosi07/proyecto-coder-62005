@@ -27,6 +27,7 @@ export const functionMap = {
     buyWeapon,
     attack,
     restart,
+    dodge,
     easterEgg,
     pickTwo,
     pickEight
@@ -165,6 +166,9 @@ export function attack() {
     } else if (gameState.enemyHp <= 0) {
         enemies[gameState.fighting].name === "King" ? winGame() : defeatEnemy();
     }
+}
+export function dodge() {
+    text.innerText = "You dodge the attack from the " + enemies[fighting].name + ".";
 }
 
 export function getEnemyAttackValue(level) {
