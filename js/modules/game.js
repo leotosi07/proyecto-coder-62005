@@ -1,22 +1,48 @@
-import { button1, button2, button3, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text, xpText, hpText, goldText, enemyStats, enemyNameText, enemyHpText } from "./dom.js";
-import { weapons, enemies, locations,setDisplay,playerName } from "./events.js";
+import { button1,button2, button3,mainMenu,newGameBtn,loadGameBtn,saveGameBtn,controls,stats,intro,text,xpText,hpText,goldText,enemyStats,enemyNameText,enemyHpText } from "./dom.js";
 
-export let xp = 0;
-export let hp = 100;
-export let gold = 30;
-export let currentWeapon = 0;
-export let fighting;
-export let inventory = ["rod"];
 
-export let enemyHp = ''
+let xp = 0;
+let hp = 100;
+let gold = 30;
+let currentWeapon = 0;
+let fighting;
+let inventory = ["rod"];
+let playerName = '';
+let enemyHp = ''
 
+
+
+let weapons = [];
+let enemies = [];
+let locations = [];
+
+// Función para cargar JSON
+export async function loadJSON() {
+    try {
+        const [weaponsResponse, enemiesResponse, locationsResponse] = await Promise.all([
+            fetch('https://raw.githubusercontent.com/leotosi07/proyecto-coder-62005/main/db/weapons.JSON'),
+            fetch('https://raw.githubusercontent.com/leotosi07/proyecto-coder-62005/main/db/enemies.JSON'),
+            fetch('https://raw.githubusercontent.com/leotosi07/proyecto-coder-62005/main/db/locations.JSON')
+        ]);
+
+        weapons = await weaponsResponse.json();
+        enemies = await enemiesResponse.json();
+        locations = await locationsResponse.json();
+
+        console.log('Data loaded:', { weapons, enemies, locations });
+
+        startGame();
+    } catch (error) {
+        console.error('Error loading JSON data:', error);
+    }
+}
 
 export function startGame() {
     update(locations[8]);
 }
 
 
-export const functionMap = {
+const functionMap = {
     goTown,
     goStore,
     goDungeon,
@@ -32,7 +58,7 @@ export const functionMap = {
 };
 
 // Función para ejecutar una función desde una cadena de texto
-export function executeFunction(functionString) {
+function executeFunction(functionString) {
     if (!weapons.length || !enemies.length || !locations.length) {
         console.error('Data not loaded yet.');
         return;
@@ -48,9 +74,63 @@ export function executeFunction(functionString) {
     }
 }
 
+//start game
+newGameBtn.addEventListener('click', () => {
+    setDisplay([newGameBtn, loadGameBtn], "none");
+    restart()
+
+    let playerForm = document.createElement('form');
+    let input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'playerName';
+    input.placeholder = 'Enter your name';
+    let submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Iniciar';
+    playerForm.appendChild(input);
+    playerForm.appendChild(submitButton);
+    mainMenu.appendChild(playerForm);
+
+    playerForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        playerName = input.value.trim();
+        if (playerName === '') {
+            Swal.fire({
+                title: 'Please enter your name.',
+                width: '25em',
+                position: 'top',
+                showClass: {
+                    popup: `
+                    animate__animated
+                    animate__backInDown
+                    animate__faster
+                    `
+                },
+                hideClass: {
+                    popup: `
+                    animate__animated
+                    animate__backOutUp
+                    animate__faster
+                    `
+                }
+            });
+        } else {
+            setDisplay([newGameBtn, loadGameBtn, saveGameBtn, text, controls, stats], "block");
+            setDisplay([intro, playerForm], "none");
+
+        }
+    });
+});
+
+function setDisplay(elements, displayStyle) {
+    elements.forEach(element => {
+        element.style.display = displayStyle;
+    });
+}
 
 
-
+loadGameBtn.onclick = loadGame;
+saveGameBtn.onclick = saveGame;
 
 
 
@@ -60,7 +140,7 @@ button1.onclick = goStore;
 button2.onclick = goDungeon;
 button3.onclick = fightEnemy.bind(null, 2);
 
-export function update(location) {
+function update(location) {
     enemyStats.style.display = "none";
     button1.innerText = location.buttonText[0];
     button2.innerText = location.buttonText[1];
@@ -73,19 +153,19 @@ export function update(location) {
     text.innerText = location.text;
 }
 
-export function goTown() {
+function goTown() {
     update(locations[0]);
 }
 
-export function goStore() {
+function goStore() {
     update(locations[1]);
 }
 
-export function goDungeon() {
+function goDungeon() {
     update(locations[2]);
 }
 
-export function buyHp() {
+function buyHp() {
     if (gold >= 10) {
         gold -= 10;
         hp += 10;
@@ -95,11 +175,11 @@ export function buyHp() {
     }
 
 }
-export function updateButton2(location) {
+function updateButton2(location) {
     button2.innerText = location.buttonText[1];
     button2.onclick = location.buttonFunctions[1];
 }
-export function buyWeapon() {
+function buyWeapon() {
     if (currentWeapon < weapons.length - 1) {
         if (gold >= weapons[currentWeapon + 1].cost) {
             gold -= weapons[currentWeapon + 1].cost;
@@ -121,7 +201,7 @@ export function buyWeapon() {
     }
 }
 
-export function sellWeapon() {
+function sellWeapon() {
     if (inventory.length > 1) {
         gold += 15;
         let currentWeapon = inventory.shift();
@@ -133,12 +213,12 @@ export function sellWeapon() {
     }
 }
 
-export function fightEnemy(index) {
+function fightEnemy(index) {
     fighting = index;
     goFight();
 }
 
-export function goFight() {
+function goFight() {
     update(locations[3]);
     enemyHp = enemies[fighting].hp;
     setDisplay([enemyStats], "block");
@@ -146,7 +226,7 @@ export function goFight() {
     enemyHpText.innerText = enemyHp;
 }
 
-export function attack() {
+function attack() {
     text.innerText = "The " + enemies[fighting].name + " attacks.";
     text.innerText += " You attack it with your " + weapons[currentWeapon].name + ".";
 
@@ -166,36 +246,36 @@ export function attack() {
     }
 }
 
-export function getEnemyAttackValue(level) {
+function getEnemyAttackValue(level) {
     let hit = (level * 5) - (Math.floor(Math.random() * xp));
     return Math.max(hit, 0);
 }
 
-export function isEnemyHit() {
+function isEnemyHit() {
     return Math.random() > .2 || hp < 20;
 }
 
 
-export function dodge() {
+function dodge() {
     text.innerText = "You dodge the attack from the " + enemies[fighting].name + ".";
 }
 
-export function defeatEnemy() {
+function defeatEnemy() {
     gold += Math.floor(enemies[fighting].level * 6.7)
     xp += enemies[fighting].level;
     updateStats();
     update(locations[4]);
 }
 
-export function lose() {
+function lose() {
     update(locations[5]);
 }
 
-export function winGame() {
+function winGame() {
     update(locations[6]);
 }
 
-export function restart() {
+function restart() {
     xp = 0;
     hp = 100;
     gold = 30;
@@ -207,19 +287,19 @@ export function restart() {
     setDisplay([stats, controls, text, saveGameBtn], "none");
 }
 
-export function easterEgg() {
+function easterEgg() {
     update(locations[7]);
 }
 
-export function pickTwo() {
+function pickTwo() {
     pick(2);
 }
 
-export function pickEight() {
+function pickEight() {
     pick(8);
 }
 
-export function pick(guess) {
+function pick(guess) {
     let numbers = [];
     while (numbers.length < 10) {
         numbers.push(Math.floor(Math.random() * 11));
@@ -244,13 +324,13 @@ export function pick(guess) {
         }
     }
 }
-export function updateStats() {
+function updateStats() {
     goldText.innerText = gold;
     hpText.innerText = hp;
     xpText.innerText = xp;
 }
 
-export function loadGame() {
+function loadGame() {
     const saves = JSON.parse(localStorage.getItem('saves')) || [];
     if (saves.length === 0) {
         Swal.fire({
@@ -331,7 +411,7 @@ export function loadGame() {
     });
 }
 
-export function saveGame() {
+function saveGame() {
     const saves = JSON.parse(localStorage.getItem('saves')) || [];
 
     Swal.fire({
@@ -437,7 +517,7 @@ export function saveGame() {
     });
 }
 
-export function createSaveData() {
+function createSaveData() {
     return {
         xp: xp,
         hp: hp,
