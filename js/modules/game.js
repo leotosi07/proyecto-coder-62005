@@ -26,7 +26,6 @@ export const functionMap = {
     buyHp,
     buyWeapon,
     attack,
-    dodge,
     restart,
     easterEgg,
     pickTwo,
@@ -178,9 +177,6 @@ export function isEnemyHit() {
 }
 
 
-export function dodge() {
-    text.innerText = "You dodge the attack from the " + enemies[gameState.fighting].name + ".";
-}
 
 export function defeatEnemy() {
     gameState.gold += Math.floor(enemies[gameState.fighting].level * 6.7)
