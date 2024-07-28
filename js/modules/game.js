@@ -168,7 +168,7 @@ export function attack() {
     }
 }
 export function dodge() {
-    text.innerText = "You dodge the attack from the " + enemies[fighting].name + ".";
+    text.innerText = "You dodge the attack from the " + enemies[gameState.fighting].name + ".";
 }
 
 export function getEnemyAttackValue(level) {
