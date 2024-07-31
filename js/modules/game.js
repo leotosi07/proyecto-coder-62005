@@ -220,105 +220,91 @@ export function saveGame() {
     const saves = JSON.parse(localStorage.getItem('saves')) || [];
 
     Swal.fire({
-        title: 'Do you want to save a new slot (ok for new slot, cancel for overwrite unless it is a new game)?',
+        title: 'Do you want to save a new slot (OK for new slot, Cancel for overwrite unless it is a new game)?',
         showCancelButton: true,
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         position: 'top',
         showClass: {
-            popup: `
-            animate__animated
-            animate__backInDown
-            animate__faster
-            `
+            popup: 'animate__animated animate__backInDown animate__faster'
         },
         hideClass: {
-            popup: `
-            animate__animated
-            animate__backOutUp
-            animate__faster
-            `
+            popup: 'animate__animated animate__backOutUp animate__faster'
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            if (saves.length >= 9) {
-                Swal.fire({
-                    title: 'No more slots available, you need to overwrite.',
-                    input: 'text',
-                    position: 'top',
-                    inputLabel: saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n'),
-                    inputValidator: (value) => {
-                        return new Promise((resolve) => {
-                            const selectedSaveIndex = parseInt(value, 10);
-
-                            if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
-                                resolve();
-                            } else {
-                                resolve('Invalid selection!');
-                            }
-                        });
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const selectedSaveIndex = parseInt(result.value, 10) - 1;
-                        saves[selectedSaveIndex] = createSaveData();
-                        localStorage.setItem('saves', JSON.stringify(saves));
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Slot overwritten!',
-                            position: 'top'
-                        });
-                    }
-                });
-            } else {
-                saves.push(createSaveData());
-                localStorage.setItem('saves', JSON.stringify(saves));
-                Swal.fire({
-                    icon: 'success',
-                    title: 'New slot created!',
-                    position: 'top'
-                });
-            }
+            handleNewSlot(saves);
         } else {
-            if (saves.length >= 9) {
-                Swal.fire({
-                    title: 'No more slots available, you need to overwrite.',
-                    input: 'text',
-                    position: 'top',
-                    inputLabel: saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n'),
-                    inputValidator: (value) => {
-                        return new Promise((resolve) => {
-                            const selectedSaveIndex = parseInt(value, 10);
+            handleOverwrite(saves);
+        }
+    });
+}
 
-                            if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
-                                resolve();
-                            } else {
-                                resolve('Invalid selection!');
-                            }
-                        });
+function handleNewSlot(saves) {
+    if (saves.length >= 9) {
+        Swal.fire({
+            title: 'No more slots available, you need to overwrite.',
+            input: 'text',
+            position: 'top',
+            inputLabel: saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n'),
+            inputValidator: (value) => {
+                return new Promise((resolve) => {
+                    const selectedSaveIndex = parseInt(value, 10);
+
+                    if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
+                        resolve();
+                    } else {
+                        resolve('Invalid selection!');
                     }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const selectedSaveIndex = parseInt(result.value, 10) - 1;
-                        saves[selectedSaveIndex] = createSaveData();
-                        localStorage.setItem('saves', JSON.stringify(saves));
-                        Swal.fire({
-                            position: 'top',
-                            icon: 'success',
-                            title: 'Slot overwritten!'
-                        });
-                    }
-                });
-            } else {
-                saves.push(createSaveData());
-                localStorage.setItem('saves', JSON.stringify(saves));
-                Swal.fire({
-                    position: 'top',
-                    icon: 'success',
-                    title: 'New slot created!'
                 });
             }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                overwriteSlot(saves, parseInt(result.value, 10) - 1);
+            }
+        });
+    } else {
+        saves.push(createSaveData());
+        localStorage.setItem('saves', JSON.stringify(saves));
+        Swal.fire({
+            icon: 'success',
+            title: 'New slot created!',
+            position: 'top'
+        });
+    }
+}
+
+function handleOverwrite(saves) {
+    Swal.fire({
+        title: 'Select a slot to overwrite:',
+        input: 'text',
+        position: 'top',
+        inputLabel: saves.map((save, index) => `${index + 1}: ${save.playerName} - ${save.timestamp}`).join('\n'),
+        inputValidator: (value) => {
+            return new Promise((resolve) => {
+                const selectedSaveIndex = parseInt(value, 10);
+
+                if (!isNaN(selectedSaveIndex) && selectedSaveIndex >= 1 && selectedSaveIndex <= saves.length) {
+                    resolve();
+                } else {
+                    resolve('Invalid selection!');
+                }
+            });
         }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            overwriteSlot(saves, parseInt(result.value, 10) - 1);
+        }
+    });
+}
+
+function overwriteSlot(saves, index) {
+    saves[index] = createSaveData();
+    localStorage.setItem('saves', JSON.stringify(saves));
+    Swal.fire({
+        icon: 'success',
+        title: 'Slot overwritten!',
+        position: 'top'
     });
 }
 
