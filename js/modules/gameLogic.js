@@ -21,7 +21,6 @@ export function goTown() {
 
 export function goStore() {
     update(locations[1]);
-    updateWeapon()
 }
 
 export function goDungeon() {

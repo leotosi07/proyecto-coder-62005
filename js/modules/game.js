@@ -17,7 +17,6 @@ export const gameState = {
 
 export function startGame() {
     update(locations[8]);
-    updateWeapon()
 }
 
 
