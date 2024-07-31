@@ -1,6 +1,6 @@
 import { button1, button2, button3, saveGameBtn, controls, stats, intro, text, xpText, hpText, goldText, enemyStats } from "./dom.js";
-import { locations,setDisplay } from "./events.js";
-import { gameState,executeFunction,updateWeapon } from "./game.js";
+import { weapons,locations,setDisplay } from "./events.js";
+import { gameState,executeFunction } from "./game.js";
 
 export function update(location) {
     enemyStats.style.display = "none";
@@ -20,6 +20,7 @@ export function goTown() {
 }
 
 export function goStore() {
+    locations[1].buttonText[1] = `Buy weapon (${weapons[gameState.currentWeapon + 1] ? weapons[gameState.currentWeapon + 1].cost : "No"} gold)`;
     update(locations[1]);
 }
 
