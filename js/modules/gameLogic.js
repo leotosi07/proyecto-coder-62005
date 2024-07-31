@@ -1,6 +1,6 @@
 import { button1, button2, button3, saveGameBtn, controls, stats, intro, text, xpText, hpText, goldText, enemyStats } from "./dom.js";
 import { locations,setDisplay } from "./events.js";
-import { gameState,executeFunction } from "./game.js";
+import { gameState,executeFunction,updateWeapon } from "./game.js";
 
 export function update(location) {
     enemyStats.style.display = "none";
@@ -21,6 +21,7 @@ export function goTown() {
 
 export function goStore() {
     update(locations[1]);
+    updateWeapon()
 }
 
 export function goDungeon() {

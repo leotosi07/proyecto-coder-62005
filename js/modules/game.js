@@ -17,6 +17,7 @@ export const gameState = {
 
 export function startGame() {
     update(locations[8]);
+    updateWeapon()
 }
 
 
@@ -83,8 +84,7 @@ export function buyWeapon() {
             text.innerText = "You now have a " + newWeapon + ".";
             gameState.inventory.push(newWeapon);
             text.innerText += " In your inventory you have: " + gameState.inventory;
-            locations[1].buttonText[1] = `Buy weapon (${weapons[gameState.currentWeapon + 1] ? weapons[gameState.currentWeapon + 1].cost : "No"} gold)`;
-            updateButton2(locations[1]);
+            updateWeapon()
             updateStats();
         } else {
             text.innerText = "You do not have enough gold to buy a weapon.";
@@ -94,7 +94,10 @@ export function buyWeapon() {
     }
 }
 
-
+export function updateWeapon(){
+    locations[1].buttonText[1] = `Buy weapon (${weapons[gameState.currentWeapon + 1] ? weapons[gameState.currentWeapon + 1].cost : "No"} gold)`;
+    updateButton2(locations[1]);
+}
 
 export function easterEgg() {
     update(locations[7]);
@@ -205,6 +208,8 @@ export function loadGame() {
             gameState.inventory = selectedSave.inventory;
             gameState.playerName = selectedSave.playerName;
             updateStats();
+            goStore();
+            updateWeapon()
             setDisplay([intro], "none");
             setDisplay([text, controls, stats, saveGameBtn, loadGameBtn, newGameBtn], "block");
             Swal.fire({
