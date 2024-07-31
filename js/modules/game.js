@@ -1,6 +1,7 @@
-import { button1, button2, button3, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text, xpText, hpText, goldText, enemyStats, enemyNameText, enemyHpText } from "./dom.js";
+import { button1, button2, button3, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text } from "./dom.js";
 import { weapons, enemies, locations,setDisplay } from "./events.js";
 import { update,goTown,goStore,goDungeon,updateStats,restart } from "./gameLogic.js";
+import { fightEnemy,attack,dodge,lose } from "./combat.js";
 
 export const gameState = {
     xp: 0,
@@ -90,83 +91,7 @@ export function buyWeapon() {
         }
     } else {
         text.innerText = "You already have the most powerful weapon!";
-        button2.innerText = "Sell weapon for 15 gold";
-        button2.onclick = sellWeapon;
     }
-}
-
-export function sellWeapon() {
-    if (gameState.inventory.length > 1) {
-        gameState.gold += 15;
-        gameState.currentWeapon = gameState.inventory.shift();
-        text.innerText = "You sold a " + gameState.currentWeapon + ".";
-        text.innerText += " In your inventory you have: " + gameState.inventory;
-        updateStats();
-    } else {
-        text.innerText = "Don't sell your only weapon!";
-    }
-}
-
-export function fightEnemy(index) {
-    gameState.fighting = index;
-    goFight();
-}
-
-export function goFight() {
-    update(locations[3]);
-    gameState.enemyHp = enemies[gameState.fighting].hp;
-    setDisplay([enemyStats], "block");
-    enemyNameText.innerText = enemies[gameState.fighting].name;
-    enemyHpText.innerText = gameState.enemyHp;
-}
-
-export function attack() {
-    text.innerText = "The " + enemies[gameState.fighting].name + " attacks.";
-    text.innerText += " You attack it with your " + weapons[gameState.currentWeapon].name + ".";
-
-    if (isEnemyHit()) {
-        gameState.hp -= getEnemyAttackValue(enemies[gameState.fighting].level);
-    } else {
-        text.innerText += " You miss.";
-    }
-
-    gameState.enemyHp -= weapons[gameState.currentWeapon].power + Math.floor(Math.random() * gameState.xp) + 1;
-    hpText.innerText = gameState.hp;
-    enemyHpText.innerText = gameState.enemyHp;
-    if (gameState.hp <= 0) {
-        lose();
-    } else if (gameState.enemyHp <= 0) {
-        enemies[gameState.fighting].name === "King" ? winGame() : defeatEnemy();
-    }
-}
-export function dodge() {
-    text.innerText = "You dodge the attack from the " + enemies[gameState.fighting].name + ".";
-}
-
-export function getEnemyAttackValue(level) {
-    let hit = (level * 5) - (Math.floor(Math.random() * gameState.xp));
-    return Math.max(hit, 0);
-}
-
-export function isEnemyHit() {
-    return Math.random() > .2 || gameState.hp < 20;
-}
-
-
-
-export function defeatEnemy() {
-    gameState.gold += Math.floor(enemies[gameState.fighting].level * 6.7)
-    gameState.xp += enemies[gameState.fighting].level;
-    updateStats();
-    update(locations[4]);
-}
-
-export function lose() {
-    update(locations[5]);
-}
-
-export function winGame() {
-    update(locations[6]);
 }
 
 
