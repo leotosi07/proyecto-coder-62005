@@ -1,6 +1,6 @@
-import {  mainMenu, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text } from "./dom.js";
-import {  startGame, restart,loadGame,saveGame,gameState  } from "./game.js";
-
+import { mainMenu, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text } from "./dom.js";
+import { startGame,loadGame,saveGame,gameState  } from "./game.js";
+import { restart } from "./gameLogic.js";
 
 export let weapons = [];
 export let enemies = [];

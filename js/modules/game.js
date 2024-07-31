@@ -1,5 +1,6 @@
 import { button1, button2, button3, newGameBtn, loadGameBtn, saveGameBtn, controls, stats, intro, text, xpText, hpText, goldText, enemyStats, enemyNameText, enemyHpText } from "./dom.js";
 import { weapons, enemies, locations,setDisplay } from "./events.js";
+import { update,goTown,goStore,goDungeon,updateStats,restart } from "./gameLogic.js";
 
 export const gameState = {
     xp: 0,
@@ -50,42 +51,13 @@ export function executeFunction(functionString) {
     }
 }
 
-
-
-
-
-
-
 // initialize buttons
 
 button1.onclick = goStore;
 button2.onclick = goDungeon;
 button3.onclick = fightEnemy.bind(null, 2);
 
-export function update(location) {
-    enemyStats.style.display = "none";
-    button1.innerText = location.buttonText[0];
-    button2.innerText = location.buttonText[1];
-    button3.innerText = location.buttonText[2];
 
-    button1.onclick = () => executeFunction(location.buttonFunctions[0]);
-    button2.onclick = () => executeFunction(location.buttonFunctions[1]);
-    button3.onclick = () => executeFunction(location.buttonFunctions[2]);
-
-    text.innerText = location.text;
-}
-
-export function goTown() {
-    update(locations[0]);
-}
-
-export function goStore() {
-    update(locations[1]);
-}
-
-export function goDungeon() {
-    update(locations[2]);
-}
 
 export function buyHp() {
     if (gameState.gold >= 10) {
@@ -197,17 +169,7 @@ export function winGame() {
     update(locations[6]);
 }
 
-export function restart() {
-    gameState.xp = 0;
-    gameState.hp = 100;
-    gameState.gold = 30;
-    gameState.currentWeapon = 0;
-    gameState.inventory = ["rod"];
-    updateStats();
-    update(locations[8]);
-    setDisplay([intro], "block");
-    setDisplay([stats, controls, text, saveGameBtn], "none");
-}
+
 
 export function easterEgg() {
     update(locations[7]);
@@ -246,11 +208,7 @@ export function pick(guess) {
         }
     }
 }
-export function updateStats() {
-    goldText.innerText = gameState.gold;
-    hpText.innerText = gameState.hp;
-    xpText.innerText = gameState.xp;
-}
+
 
 export function loadGame() {
     const saves = JSON.parse(localStorage.getItem('saves')) || [];
